@@ -62,7 +62,7 @@ const usageMessageFormatRuntimeControlFormat = //
 `
 
 const usageMessageFormat = //
-`Usage of Niklas Agent:
+`Usage of Boxul Agent:
   %[1]s [-c config-file]
   %[1]s [-c config-file] [-v] -p
   %[1]s [-c config-file] [-v] -t item-key
@@ -73,7 +73,7 @@ const usageMessageFormat = //
 `
 
 const helpMessageFormat = //
-`A Niklas Agent daemon for monitoring of various server parameters.
+`A Boxul Agent daemon for monitoring of various server parameters.
 
 Options:
 %[1]s
@@ -128,7 +128,7 @@ func main() {
 		if !errors.As(err, &cliErr) {
 			fmt.Fprintf(
 				os.Stderr,
-				"niklas_agent [%d]: ERROR: %s\n",
+				"boxul_agent [%d]: ERROR: %s\n",
 				os.Getpid(),
 				err.Error(),
 			)
@@ -137,7 +137,7 @@ func main() {
 
 		fmt.Fprintf(
 			os.Stderr,
-			"niklas_agent [%d]: ERROR: %s\n",
+			"boxul_agent [%d]: ERROR: %s\n",
 			os.Getpid(),
 			cliErr.Message,
 		)
@@ -344,7 +344,7 @@ func runAgent(isForeground bool, configPath string, systemOpt agent.PluginSystem
 
 	zbxlib.SetLogLevel(agent.Options.DebugLevel)
 
-	greeting := fmt.Sprintf("Starting Niklas Agent (%s)", version.Long())
+	greeting := fmt.Sprintf("Starting Boxul Agent (%s)", version.Long())
 	log.Infof(greeting)
 
 	addresses, err := agent.ParseServerActive(agent.Options.ServerActive)
@@ -436,7 +436,7 @@ func runAgent(isForeground bool, configPath string, systemOpt agent.PluginSystem
 
 	agent.FirstHostname = hostnames[0]
 	hostmessage := fmt.Sprintf(
-		"Niklas Agent hostname: [%s]",
+		"Boxul Agent hostname: [%s]",
 		agent.Options.Hostname,
 	)
 	log.Infof(hostmessage)
@@ -520,7 +520,7 @@ func runAgent(isForeground bool, configPath string, systemOpt agent.PluginSystem
 	}
 
 	monitor.Wait(monitor.Output)
-	farewell := fmt.Sprintf("Niklas Agent stopped. (%s)", version.Long())
+	farewell := fmt.Sprintf("Boxul Agent stopped. (%s)", version.Long())
 	log.Infof(farewell)
 
 	if isForeground && agent.Options.LogType != "console" {
@@ -557,7 +557,7 @@ func parseArgs() (string, *Arguments, error) {
 			Flag: zbxflag.Flag{
 				Name:        "foreground",
 				Shorthand:   "f",
-				Description: "Run Niklas Agent in foreground",
+				Description: "Run Boxul Agent in foreground",
 			},
 			Default: true,
 			Dest:    &args.foreground,
