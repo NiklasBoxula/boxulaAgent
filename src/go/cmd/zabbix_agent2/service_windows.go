@@ -34,7 +34,7 @@ import (
 	"golang.zabbix.com/sdk/zbxflag"
 )
 
-const usageMessageExampleConfPath = `C:\zabbix\zabbix_agent2.conf`
+const usageMessageExampleConfPath = `C:\zabbix\niklas_agent.conf`
 
 const (
 	startTypeAutomatic = "automatic"
@@ -44,7 +44,7 @@ const (
 )
 
 var (
-	serviceName = "Zabbix Agent 2"
+	serviceName = "NiklasAgent"
 
 	svcInstallFlag       bool
 	svcUninstallFlag     bool
@@ -82,7 +82,7 @@ func osDependentFlags() zbxflag.Flags {
 			Flag: zbxflag.Flag{
 				Name:        "install",
 				Shorthand:   "i",
-				Description: "Install Zabbix agent 2 as service",
+				Description: "Install Niklas Agent as service",
 			},
 			Default: false,
 			Dest:    &svcInstallFlag,
@@ -91,7 +91,7 @@ func osDependentFlags() zbxflag.Flags {
 			Flag: zbxflag.Flag{
 				Name:        "uninstall",
 				Shorthand:   "d",
-				Description: "Uninstall Zabbix agent 2 from service",
+				Description: "Uninstall Niklas Agent from service",
 			},
 			Default: false,
 			Dest:    &svcUninstallFlag,
@@ -100,7 +100,7 @@ func osDependentFlags() zbxflag.Flags {
 			Flag: zbxflag.Flag{
 				Name:        "start",
 				Shorthand:   "s",
-				Description: "Start Zabbix agent 2 service",
+				Description: "Start Niklas Agent service",
 			},
 			Default: false,
 			Dest:    &svcStartFlag,
@@ -109,7 +109,7 @@ func osDependentFlags() zbxflag.Flags {
 			Flag: zbxflag.Flag{
 				Name:        "stop",
 				Shorthand:   "x",
-				Description: "Stop Zabbix agent 2 service",
+				Description: "Stop Niklas Agent service",
 			},
 			Default: false,
 			Dest:    &svcStopFlag,
@@ -119,7 +119,7 @@ func osDependentFlags() zbxflag.Flags {
 				Name:      "startup-type",
 				Shorthand: "S",
 				Description: fmt.Sprintf(
-					"Set startup type of the Zabbix Windows agent service to be installed."+
+					"Set startup type of the Niklas Agent Windows service to be installed."+
 						" Allowed values: %s (default), %s, %s, %s",
 					startTypeAutomatic,
 					startTypeDelayed,
@@ -414,7 +414,7 @@ func svcStartTypeFlagParse() (uint32, bool, error) {
 func svcInstall(conf string) error {
 	exepath, err := getAgentPath()
 	if err != nil {
-		return fmt.Errorf("failed to get Zabbix Agent 2 executable path: %s", err.Error())
+		return fmt.Errorf("failed to get Niklas Agent executable path: %s", err.Error())
 	}
 
 	m, err := mgr.Connect()
@@ -442,7 +442,7 @@ func svcInstall(conf string) error {
 		exepath,
 		mgr.Config{
 			StartType:        startType,
-			DisplayName:      serviceName,
+			DisplayName:      "Niklas Agent",
 			Description:      "Provides system monitoring",
 			BinaryPathName:   fmt.Sprintf("%s -c %s -f=false", exepath, conf),
 			DelayedAutoStart: delayedAutoStart,
@@ -616,7 +616,7 @@ func sendServiceStop() {
 
 func runService() {
 	if err := svc.Run(serviceName, &winService{}); err != nil {
-		panic(errs.Wrap(err, "use foreground option to run Zabbix agent as console application"))
+		panic(errs.Wrap(err, "use foreground option to run Niklas Agent as console application"))
 	}
 }
 
@@ -631,7 +631,7 @@ func (ws *winService) Execute(
 		changes <- svc.Status{State: svc.Running, Accepts: svc.AcceptStop | svc.AcceptShutdown}
 	case <-fatalStopChan:
 		changes <- svc.Status{State: svc.Stopped}
-		// This is needed to make sure that windows will receive the status stopped before zabbix agent 2 process ends
+		// This is needed to make sure that windows will receive the status stopped before Niklas Agent process ends
 		<-time.After(time.Millisecond * 500)
 		fatalStopWg.Done()
 		return
@@ -652,7 +652,7 @@ loop:
 				closeChan <- true
 				winServiceWg.Wait()
 				changes <- svc.Status{State: svc.Stopped}
-				// This is needed to make sure that windows will receive the status stopped before zabbix agent 2 process ends
+				// This is needed to make sure that windows will receive the status stopped before Niklas Agent process ends
 				<-time.After(time.Millisecond * 500)
 				closeChan <- true
 				break loop
@@ -664,7 +664,7 @@ loop:
 			changes <- svc.Status{State: svc.StopPending}
 			winServiceWg.Wait()
 			changes <- svc.Status{State: svc.Stopped}
-			// This is needed to make sure that windows will receive the status stopped before zabbix agent 2 process ends
+			// This is needed to make sure that windows will receive the status stopped before Niklas Agent process ends
 			<-time.After(time.Millisecond * 500)
 			closeChan <- true
 			break loop
