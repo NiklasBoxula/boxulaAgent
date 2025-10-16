@@ -1,0 +1,697 @@
+From 96f67f57ab3025711882fac96318a6537720e4e9 Mon Sep 17 00:00:00 2001
+From: NiklasBoxula <niklaschalupa@icloud.com>
+Date: Thu, 16 Oct 2025 16:16:33 +0200
+Subject: [PATCH 1/2] Branding: Zabbix Agent 2 -> Niklas Agent
+ (Service/Usage/Banner, sichere Defaults)
+
+---
+ src/go/cmd/zabbix_agent2/service_nix.go     |  2 +-
+ src/go/cmd/zabbix_agent2/service_windows.go | 26 ++++++++++-----------
+ src/go/cmd/zabbix_agent2/zabbix_agent2.go   | 16 ++++++-------
+ src/go/conf/zabbix_agent2.conf              | 18 +++++++-------
+ src/go/conf/zabbix_agent2.win.conf          | 16 ++++++-------
+ 5 files changed, 39 insertions(+), 39 deletions(-)
+
+diff --git a/src/go/cmd/zabbix_agent2/service_nix.go b/src/go/cmd/zabbix_agent2/service_nix.go
+index b50c844e21b..8c2a719d63c 100644
+--- a/src/go/cmd/zabbix_agent2/service_nix.go
++++ b/src/go/cmd/zabbix_agent2/service_nix.go
+@@ -22,7 +22,7 @@ import (
+ 	"golang.zabbix.com/sdk/zbxflag"
+ )
+ 
+-const usageMessageExampleConfPath = `/etc/zabbix/zabbix_agent2.conf`
++const usageMessageExampleConfPath = `/etc/zabbix/niklas_agent.conf`
+ 
+ func osDependentFlags() zbxflag.Flags { return zbxflag.Flags{} }
+ 
+diff --git a/src/go/cmd/zabbix_agent2/service_windows.go b/src/go/cmd/zabbix_agent2/service_windows.go
+index 69552b84659..e2260cf0ca5 100644
+--- a/src/go/cmd/zabbix_agent2/service_windows.go
++++ b/src/go/cmd/zabbix_agent2/service_windows.go
+@@ -34,7 +34,7 @@ import (
+ 	"golang.zabbix.com/sdk/zbxflag"
+ )
+ 
+-const usageMessageExampleConfPath = `C:\zabbix\zabbix_agent2.conf`
++const usageMessageExampleConfPath = `C:\zabbix\niklas_agent.conf`
+ 
+ const (
+ 	startTypeAutomatic = "automatic"
+@@ -44,7 +44,7 @@ const (
+ )
+ 
+ var (
+-	serviceName = "Zabbix Agent 2"
++	serviceName = "NiklasAgent"
+ 
+ 	svcInstallFlag       bool
+ 	svcUninstallFlag     bool
+@@ -82,7 +82,7 @@ func osDependentFlags() zbxflag.Flags {
+ 			Flag: zbxflag.Flag{
+ 				Name:        "install",
+ 				Shorthand:   "i",
+-				Description: "Install Zabbix agent 2 as service",
++				Description: "Install Niklas Agent as service",
+ 			},
+ 			Default: false,
+ 			Dest:    &svcInstallFlag,
+@@ -91,7 +91,7 @@ func osDependentFlags() zbxflag.Flags {
+ 			Flag: zbxflag.Flag{
+ 				Name:        "uninstall",
+ 				Shorthand:   "d",
+-				Description: "Uninstall Zabbix agent 2 from service",
++				Description: "Uninstall Niklas Agent from service",
+ 			},
+ 			Default: false,
+ 			Dest:    &svcUninstallFlag,
+@@ -100,7 +100,7 @@ func osDependentFlags() zbxflag.Flags {
+ 			Flag: zbxflag.Flag{
+ 				Name:        "start",
+ 				Shorthand:   "s",
+-				Description: "Start Zabbix agent 2 service",
++				Description: "Start Niklas Agent service",
+ 			},
+ 			Default: false,
+ 			Dest:    &svcStartFlag,
+@@ -109,7 +109,7 @@ func osDependentFlags() zbxflag.Flags {
+ 			Flag: zbxflag.Flag{
+ 				Name:        "stop",
+ 				Shorthand:   "x",
+-				Description: "Stop Zabbix agent 2 service",
++				Description: "Stop Niklas Agent service",
+ 			},
+ 			Default: false,
+ 			Dest:    &svcStopFlag,
+@@ -119,7 +119,7 @@ func osDependentFlags() zbxflag.Flags {
+ 				Name:      "startup-type",
+ 				Shorthand: "S",
+ 				Description: fmt.Sprintf(
+-					"Set startup type of the Zabbix Windows agent service to be installed."+
++					"Set startup type of the Niklas Agent Windows service to be installed."+
+ 						" Allowed values: %s (default), %s, %s, %s",
+ 					startTypeAutomatic,
+ 					startTypeDelayed,
+@@ -414,7 +414,7 @@ func svcStartTypeFlagParse() (uint32, bool, error) {
+ func svcInstall(conf string) error {
+ 	exepath, err := getAgentPath()
+ 	if err != nil {
+-		return fmt.Errorf("failed to get Zabbix Agent 2 executable path: %s", err.Error())
++		return fmt.Errorf("failed to get Niklas Agent executable path: %s", err.Error())
+ 	}
+ 
+ 	m, err := mgr.Connect()
+@@ -442,7 +442,7 @@ func svcInstall(conf string) error {
+ 		exepath,
+ 		mgr.Config{
+ 			StartType:        startType,
+-			DisplayName:      serviceName,
++			DisplayName:      "Niklas Agent",
+ 			Description:      "Provides system monitoring",
+ 			BinaryPathName:   fmt.Sprintf("%s -c %s -f=false", exepath, conf),
+ 			DelayedAutoStart: delayedAutoStart,
+@@ -616,7 +616,7 @@ func sendServiceStop() {
+ 
+ func runService() {
+ 	if err := svc.Run(serviceName, &winService{}); err != nil {
+-		panic(errs.Wrap(err, "use foreground option to run Zabbix agent as console application"))
++		panic(errs.Wrap(err, "use foreground option to run Niklas Agent as console application"))
+ 	}
+ }
+ 
+@@ -631,7 +631,7 @@ func (ws *winService) Execute(
+ 		changes <- svc.Status{State: svc.Running, Accepts: svc.AcceptStop | svc.AcceptShutdown}
+ 	case <-fatalStopChan:
+ 		changes <- svc.Status{State: svc.Stopped}
+-		// This is needed to make sure that windows will receive the status stopped before zabbix agent 2 process ends
++		// This is needed to make sure that windows will receive the status stopped before Niklas Agent process ends
+ 		<-time.After(time.Millisecond * 500)
+ 		fatalStopWg.Done()
+ 		return
+@@ -652,7 +652,7 @@ loop:
+ 				closeChan <- true
+ 				winServiceWg.Wait()
+ 				changes <- svc.Status{State: svc.Stopped}
+-				// This is needed to make sure that windows will receive the status stopped before zabbix agent 2 process ends
++				// This is needed to make sure that windows will receive the status stopped before Niklas Agent process ends
+ 				<-time.After(time.Millisecond * 500)
+ 				closeChan <- true
+ 				break loop
+@@ -664,7 +664,7 @@ loop:
+ 			changes <- svc.Status{State: svc.StopPending}
+ 			winServiceWg.Wait()
+ 			changes <- svc.Status{State: svc.Stopped}
+-			// This is needed to make sure that windows will receive the status stopped before zabbix agent 2 process ends
++			// This is needed to make sure that windows will receive the status stopped before Niklas Agent process ends
+ 			<-time.After(time.Millisecond * 500)
+ 			closeChan <- true
+ 			break loop
+diff --git a/src/go/cmd/zabbix_agent2/zabbix_agent2.go b/src/go/cmd/zabbix_agent2/zabbix_agent2.go
+index 35fec498d00..7f90be59f7e 100644
+--- a/src/go/cmd/zabbix_agent2/zabbix_agent2.go
++++ b/src/go/cmd/zabbix_agent2/zabbix_agent2.go
+@@ -62,7 +62,7 @@ const usageMessageFormatRuntimeControlFormat = //
+ `
+ 
+ const usageMessageFormat = //
+-`Usage of Zabbix agent 2:
++`Usage of Niklas Agent:
+   %[1]s [-c config-file]
+   %[1]s [-c config-file] [-v] -p
+   %[1]s [-c config-file] [-v] -t item-key
+@@ -73,7 +73,7 @@ const usageMessageFormat = //
+ `
+ 
+ const helpMessageFormat = //
+-`A Zabbix daemon for monitoring of various server parameters.
++`A Niklas Agent daemon for monitoring of various server parameters.
+ 
+ Options:
+ %[1]s
+@@ -128,7 +128,7 @@ func main() {
+ 		if !errors.As(err, &cliErr) {
+ 			fmt.Fprintf(
+ 				os.Stderr,
+-				"zabbix_agent2 [%d]: ERROR: %s\n",
++				"niklas_agent [%d]: ERROR: %s\n",
+ 				os.Getpid(),
+ 				err.Error(),
+ 			)
+@@ -137,7 +137,7 @@ func main() {
+ 
+ 		fmt.Fprintf(
+ 			os.Stderr,
+-			"zabbix_agent2 [%d]: ERROR: %s\n",
++			"niklas_agent [%d]: ERROR: %s\n",
+ 			os.Getpid(),
+ 			cliErr.Message,
+ 		)
+@@ -344,7 +344,7 @@ func runAgent(isForeground bool, configPath string, systemOpt agent.PluginSystem
+ 
+ 	zbxlib.SetLogLevel(agent.Options.DebugLevel)
+ 
+-	greeting := fmt.Sprintf("Starting Zabbix Agent 2 (%s)", version.Long())
++	greeting := fmt.Sprintf("Starting Niklas Agent (%s)", version.Long())
+ 	log.Infof(greeting)
+ 
+ 	addresses, err := agent.ParseServerActive(agent.Options.ServerActive)
+@@ -436,7 +436,7 @@ func runAgent(isForeground bool, configPath string, systemOpt agent.PluginSystem
+ 
+ 	agent.FirstHostname = hostnames[0]
+ 	hostmessage := fmt.Sprintf(
+-		"Zabbix Agent2 hostname: [%s]",
++		"Niklas Agent hostname: [%s]",
+ 		agent.Options.Hostname,
+ 	)
+ 	log.Infof(hostmessage)
+@@ -520,7 +520,7 @@ func runAgent(isForeground bool, configPath string, systemOpt agent.PluginSystem
+ 	}
+ 
+ 	monitor.Wait(monitor.Output)
+-	farewell := fmt.Sprintf("Zabbix Agent 2 stopped. (%s)", version.Long())
++	farewell := fmt.Sprintf("Niklas Agent stopped. (%s)", version.Long())
+ 	log.Infof(farewell)
+ 
+ 	if isForeground && agent.Options.LogType != "console" {
+@@ -557,7 +557,7 @@ func parseArgs() (string, *Arguments, error) {
+ 			Flag: zbxflag.Flag{
+ 				Name:        "foreground",
+ 				Shorthand:   "f",
+-				Description: "Run Zabbix agent in foreground",
++				Description: "Run Niklas Agent in foreground",
+ 			},
+ 			Default: true,
+ 			Dest:    &args.foreground,
+diff --git a/src/go/conf/zabbix_agent2.conf b/src/go/conf/zabbix_agent2.conf
+index aa4caad5137..15521c2ea53 100644
+--- a/src/go/conf/zabbix_agent2.conf
++++ b/src/go/conf/zabbix_agent2.conf
+@@ -1,4 +1,4 @@
+-# This is a configuration file for Zabbix agent 2 (Unix)
++# This is a configuration file for Niklas Agent (Unix)
+ # To get more information about Zabbix, visit https://www.zabbix.com
+ 
+ ############ GENERAL PARAMETERS #################
+@@ -8,7 +8,7 @@
+ #
+ # Mandatory: no
+ # Default:
+-# PidFile=/tmp/zabbix_agent2.pid
++# PidFile=/tmp/niklas_agent.pid
+ 
+ ### Option: LogType
+ #	Specifies where log messages are written to:
+@@ -25,7 +25,7 @@
+ #
+ # Mandatory: yes, if LogType is set to file, otherwise no
+ # Default:
+-# LogFile=/tmp/zabbix_agent2.log
++# LogFile=/tmp/niklas_agent.log
+ 
+ ### Option: LogFileSize
+ #	Maximum size of log file in MB.
+@@ -67,7 +67,7 @@
+ #	'0.0.0.0/0' can be used to allow any IPv4 address.
+ #	Example: Server=127.0.0.1,192.168.1.0/24,::1,2001:db8::/32,zabbix.example.com
+ #
+-#   If left empty or not set will disable passive checks, and Zabbix agent 2 will not listen on the ListenPort.
++#   If left empty or not set will disable passive checks, and Niklas Agent will not listen on the ListenPort.
+ #
+ # Mandatory: no
+ # Default:
+@@ -226,7 +226,7 @@ Hostname=Zabbix server
+ # EnablePersistentBuffer=0
+ 
+ ### Option: PersistentBufferPeriod
+-#	Zabbix Agent2 will keep data for this time period in case of no
++#	Niklas Agent will keep data for this time period in case of no
+ #	connectivity with Zabbix server or proxy. Older data will be lost. Log data will be preserved.
+ #	Option is valid if EnablePersistentBuffer=1
+ #
+@@ -236,7 +236,7 @@ Hostname=Zabbix server
+ # PersistentBufferPeriod=1h
+ 
+ ### Option: PersistentBufferFile
+-#	Full filename. Zabbix Agent2 will keep SQLite database in this file.
++#	Full filename. Niklas Agent will keep SQLite database in this file.
+ #	Option is valid if EnablePersistentBuffer=1
+ #
+ # Mandatory: no
+@@ -549,6 +549,6 @@ Include=./zabbix_agent2.d/plugins.d/*.conf
+ # Default:
+ # Include=
+ 
+-# Include=/usr/local/etc/zabbix_agent2.userparams.conf
+-# Include=/usr/local/etc/zabbix_agent2.conf.d/
+-# Include=/usr/local/etc/zabbix_agent2.conf.d/*.conf
++# Include=/usr/local/etc/niklas_agent.userparams.conf
++# Include=/usr/local/etc/niklas_agent.conf.d/
++# Include=/usr/local/etc/niklas_agent.conf.d/*.conf
+diff --git a/src/go/conf/zabbix_agent2.win.conf b/src/go/conf/zabbix_agent2.win.conf
+index e4627eefac6..c9e4a19a376 100644
+--- a/src/go/conf/zabbix_agent2.win.conf
++++ b/src/go/conf/zabbix_agent2.win.conf
+@@ -1,4 +1,4 @@
+-# This is a configuration file for Zabbix agent 2 (Windows)
++# This is a configuration file for Niklas Agent (Windows)
+ # To get more information about Zabbix, visit https://www.zabbix.com
+ 
+ ############ GENERAL PARAMETERS #################
+@@ -17,7 +17,7 @@
+ #
+ # Mandatory: yes, if LogType is set to file, otherwise no
+ # Default:
+-# LogFile=c:\zabbix_agent2.log
++# LogFile=c:\niklas_agent.log
+ 
+ ### Option: LogFileSize
+ #	Maximum size of log file in MB.
+@@ -59,7 +59,7 @@
+ #	'0.0.0.0/0' can be used to allow any IPv4 address.
+ #	Example: Server=127.0.0.1,192.168.1.0/24,::1,2001:db8::/32,zabbix.example.com
+ #
+-#   If left empty or not set will disable passive checks, and Zabbix agent 2 will not listen on the ListenPort.
++#   If left empty or not set will disable passive checks, and Niklas Agent will not listen on the ListenPort.
+ #
+ # Mandatory: no
+ # Default:
+@@ -218,7 +218,7 @@ Hostname=Windows host
+ # EnablePersistentBuffer=0
+ 
+ ### Option: PersistentBufferPeriod
+-#	Zabbix Agent2 will keep data for this time period in case of no
++#	Niklas Agent will keep data for this time period in case of no
+ #	connectivity with Zabbix server or proxy. Older data will be lost. Log data will be preserved.
+ #	Option is valid if EnablePersistentBuffer=1
+ #
+@@ -228,7 +228,7 @@ Hostname=Windows host
+ # PersistentBufferPeriod=1h
+ 
+ ### Option: PersistentBufferFile
+-#	Full filename. Zabbix Agent2 will keep SQLite database in this file.
++#	Full filename. Niklas Agent will keep SQLite database in this file.
+ #	Option is valid if EnablePersistentBuffer=1
+ #
+ # Mandatory: no
+@@ -522,6 +522,6 @@ Include=.\zabbix_agent2.d\plugins.d\*.conf
+ # Default:
+ # Include=
+ 
+-# Include=c:\zabbix\zabbix_agent2.userparams.conf
+-# Include=c:\zabbix\zabbix_agent2.conf.d\
+-# Include=c:\zabbix\zabbix_agent2.conf.d\*.conf
++# Include=c:\zabbix\niklas_agent.userparams.conf
++# Include=c:\zabbix\niklas_agent.conf.d\
++# Include=c:\zabbix\niklas_agent.conf.d\*.conf
+-- 
+2.39.5 (Apple Git-154)
+
+
+From 086ca618bfb86efb37ddbb11abd5c06c013e1d2d Mon Sep 17 00:00:00 2001
+From: NiklasBoxula <niklaschalupa@icloud.com>
+Date: Thu, 16 Oct 2025 16:37:48 +0200
+Subject: [PATCH 2/2] Branding: Niklas Agent -> Boxul Agent
+ (Service/Usage/Banner, sichere Defaults)
+
+---
+ src/go/cmd/zabbix_agent2/service_nix.go     |  2 +-
+ src/go/cmd/zabbix_agent2/service_windows.go | 26 ++++++++++-----------
+ src/go/cmd/zabbix_agent2/zabbix_agent2.go   | 16 ++++++-------
+ src/go/conf/zabbix_agent2.conf              | 18 +++++++-------
+ src/go/conf/zabbix_agent2.win.conf          | 16 ++++++-------
+ 5 files changed, 39 insertions(+), 39 deletions(-)
+
+diff --git a/src/go/cmd/zabbix_agent2/service_nix.go b/src/go/cmd/zabbix_agent2/service_nix.go
+index 8c2a719d63c..42c3bf8c1a8 100644
+--- a/src/go/cmd/zabbix_agent2/service_nix.go
++++ b/src/go/cmd/zabbix_agent2/service_nix.go
+@@ -22,7 +22,7 @@ import (
+ 	"golang.zabbix.com/sdk/zbxflag"
+ )
+ 
+-const usageMessageExampleConfPath = `/etc/zabbix/niklas_agent.conf`
++const usageMessageExampleConfPath = `/etc/zabbix/boxul_agent.conf`
+ 
+ func osDependentFlags() zbxflag.Flags { return zbxflag.Flags{} }
+ 
+diff --git a/src/go/cmd/zabbix_agent2/service_windows.go b/src/go/cmd/zabbix_agent2/service_windows.go
+index e2260cf0ca5..9940b2cda10 100644
+--- a/src/go/cmd/zabbix_agent2/service_windows.go
++++ b/src/go/cmd/zabbix_agent2/service_windows.go
+@@ -34,7 +34,7 @@ import (
+ 	"golang.zabbix.com/sdk/zbxflag"
+ )
+ 
+-const usageMessageExampleConfPath = `C:\zabbix\niklas_agent.conf`
++const usageMessageExampleConfPath = `C:\zabbix\boxul_agent.conf`
+ 
+ const (
+ 	startTypeAutomatic = "automatic"
+@@ -44,7 +44,7 @@ const (
+ )
+ 
+ var (
+-	serviceName = "NiklasAgent"
++	serviceName = "BoxulAgent"
+ 
+ 	svcInstallFlag       bool
+ 	svcUninstallFlag     bool
+@@ -82,7 +82,7 @@ func osDependentFlags() zbxflag.Flags {
+ 			Flag: zbxflag.Flag{
+ 				Name:        "install",
+ 				Shorthand:   "i",
+-				Description: "Install Niklas Agent as service",
++				Description: "Install Boxul Agent as service",
+ 			},
+ 			Default: false,
+ 			Dest:    &svcInstallFlag,
+@@ -91,7 +91,7 @@ func osDependentFlags() zbxflag.Flags {
+ 			Flag: zbxflag.Flag{
+ 				Name:        "uninstall",
+ 				Shorthand:   "d",
+-				Description: "Uninstall Niklas Agent from service",
++				Description: "Uninstall Boxul Agent from service",
+ 			},
+ 			Default: false,
+ 			Dest:    &svcUninstallFlag,
+@@ -100,7 +100,7 @@ func osDependentFlags() zbxflag.Flags {
+ 			Flag: zbxflag.Flag{
+ 				Name:        "start",
+ 				Shorthand:   "s",
+-				Description: "Start Niklas Agent service",
++				Description: "Start Boxul Agent service",
+ 			},
+ 			Default: false,
+ 			Dest:    &svcStartFlag,
+@@ -109,7 +109,7 @@ func osDependentFlags() zbxflag.Flags {
+ 			Flag: zbxflag.Flag{
+ 				Name:        "stop",
+ 				Shorthand:   "x",
+-				Description: "Stop Niklas Agent service",
++				Description: "Stop Boxul Agent service",
+ 			},
+ 			Default: false,
+ 			Dest:    &svcStopFlag,
+@@ -119,7 +119,7 @@ func osDependentFlags() zbxflag.Flags {
+ 				Name:      "startup-type",
+ 				Shorthand: "S",
+ 				Description: fmt.Sprintf(
+-					"Set startup type of the Niklas Agent Windows service to be installed."+
++					"Set startup type of the Boxul Agent Windows service to be installed."+
+ 						" Allowed values: %s (default), %s, %s, %s",
+ 					startTypeAutomatic,
+ 					startTypeDelayed,
+@@ -414,7 +414,7 @@ func svcStartTypeFlagParse() (uint32, bool, error) {
+ func svcInstall(conf string) error {
+ 	exepath, err := getAgentPath()
+ 	if err != nil {
+-		return fmt.Errorf("failed to get Niklas Agent executable path: %s", err.Error())
++		return fmt.Errorf("failed to get Boxul Agent executable path: %s", err.Error())
+ 	}
+ 
+ 	m, err := mgr.Connect()
+@@ -442,7 +442,7 @@ func svcInstall(conf string) error {
+ 		exepath,
+ 		mgr.Config{
+ 			StartType:        startType,
+-			DisplayName:      "Niklas Agent",
++			DisplayName:      "Boxul Agent",
+ 			Description:      "Provides system monitoring",
+ 			BinaryPathName:   fmt.Sprintf("%s -c %s -f=false", exepath, conf),
+ 			DelayedAutoStart: delayedAutoStart,
+@@ -616,7 +616,7 @@ func sendServiceStop() {
+ 
+ func runService() {
+ 	if err := svc.Run(serviceName, &winService{}); err != nil {
+-		panic(errs.Wrap(err, "use foreground option to run Niklas Agent as console application"))
++		panic(errs.Wrap(err, "use foreground option to run Boxul Agent as console application"))
+ 	}
+ }
+ 
+@@ -631,7 +631,7 @@ func (ws *winService) Execute(
+ 		changes <- svc.Status{State: svc.Running, Accepts: svc.AcceptStop | svc.AcceptShutdown}
+ 	case <-fatalStopChan:
+ 		changes <- svc.Status{State: svc.Stopped}
+-		// This is needed to make sure that windows will receive the status stopped before Niklas Agent process ends
++		// This is needed to make sure that windows will receive the status stopped before Boxul Agent process ends
+ 		<-time.After(time.Millisecond * 500)
+ 		fatalStopWg.Done()
+ 		return
+@@ -652,7 +652,7 @@ loop:
+ 				closeChan <- true
+ 				winServiceWg.Wait()
+ 				changes <- svc.Status{State: svc.Stopped}
+-				// This is needed to make sure that windows will receive the status stopped before Niklas Agent process ends
++				// This is needed to make sure that windows will receive the status stopped before Boxul Agent process ends
+ 				<-time.After(time.Millisecond * 500)
+ 				closeChan <- true
+ 				break loop
+@@ -664,7 +664,7 @@ loop:
+ 			changes <- svc.Status{State: svc.StopPending}
+ 			winServiceWg.Wait()
+ 			changes <- svc.Status{State: svc.Stopped}
+-			// This is needed to make sure that windows will receive the status stopped before Niklas Agent process ends
++			// This is needed to make sure that windows will receive the status stopped before Boxul Agent process ends
+ 			<-time.After(time.Millisecond * 500)
+ 			closeChan <- true
+ 			break loop
+diff --git a/src/go/cmd/zabbix_agent2/zabbix_agent2.go b/src/go/cmd/zabbix_agent2/zabbix_agent2.go
+index 7f90be59f7e..cf9f5a8d496 100644
+--- a/src/go/cmd/zabbix_agent2/zabbix_agent2.go
++++ b/src/go/cmd/zabbix_agent2/zabbix_agent2.go
+@@ -62,7 +62,7 @@ const usageMessageFormatRuntimeControlFormat = //
+ `
+ 
+ const usageMessageFormat = //
+-`Usage of Niklas Agent:
++`Usage of Boxul Agent:
+   %[1]s [-c config-file]
+   %[1]s [-c config-file] [-v] -p
+   %[1]s [-c config-file] [-v] -t item-key
+@@ -73,7 +73,7 @@ const usageMessageFormat = //
+ `
+ 
+ const helpMessageFormat = //
+-`A Niklas Agent daemon for monitoring of various server parameters.
++`A Boxul Agent daemon for monitoring of various server parameters.
+ 
+ Options:
+ %[1]s
+@@ -128,7 +128,7 @@ func main() {
+ 		if !errors.As(err, &cliErr) {
+ 			fmt.Fprintf(
+ 				os.Stderr,
+-				"niklas_agent [%d]: ERROR: %s\n",
++				"boxul_agent [%d]: ERROR: %s\n",
+ 				os.Getpid(),
+ 				err.Error(),
+ 			)
+@@ -137,7 +137,7 @@ func main() {
+ 
+ 		fmt.Fprintf(
+ 			os.Stderr,
+-			"niklas_agent [%d]: ERROR: %s\n",
++			"boxul_agent [%d]: ERROR: %s\n",
+ 			os.Getpid(),
+ 			cliErr.Message,
+ 		)
+@@ -344,7 +344,7 @@ func runAgent(isForeground bool, configPath string, systemOpt agent.PluginSystem
+ 
+ 	zbxlib.SetLogLevel(agent.Options.DebugLevel)
+ 
+-	greeting := fmt.Sprintf("Starting Niklas Agent (%s)", version.Long())
++	greeting := fmt.Sprintf("Starting Boxul Agent (%s)", version.Long())
+ 	log.Infof(greeting)
+ 
+ 	addresses, err := agent.ParseServerActive(agent.Options.ServerActive)
+@@ -436,7 +436,7 @@ func runAgent(isForeground bool, configPath string, systemOpt agent.PluginSystem
+ 
+ 	agent.FirstHostname = hostnames[0]
+ 	hostmessage := fmt.Sprintf(
+-		"Niklas Agent hostname: [%s]",
++		"Boxul Agent hostname: [%s]",
+ 		agent.Options.Hostname,
+ 	)
+ 	log.Infof(hostmessage)
+@@ -520,7 +520,7 @@ func runAgent(isForeground bool, configPath string, systemOpt agent.PluginSystem
+ 	}
+ 
+ 	monitor.Wait(monitor.Output)
+-	farewell := fmt.Sprintf("Niklas Agent stopped. (%s)", version.Long())
++	farewell := fmt.Sprintf("Boxul Agent stopped. (%s)", version.Long())
+ 	log.Infof(farewell)
+ 
+ 	if isForeground && agent.Options.LogType != "console" {
+@@ -557,7 +557,7 @@ func parseArgs() (string, *Arguments, error) {
+ 			Flag: zbxflag.Flag{
+ 				Name:        "foreground",
+ 				Shorthand:   "f",
+-				Description: "Run Niklas Agent in foreground",
++				Description: "Run Boxul Agent in foreground",
+ 			},
+ 			Default: true,
+ 			Dest:    &args.foreground,
+diff --git a/src/go/conf/zabbix_agent2.conf b/src/go/conf/zabbix_agent2.conf
+index 15521c2ea53..b53d37274a6 100644
+--- a/src/go/conf/zabbix_agent2.conf
++++ b/src/go/conf/zabbix_agent2.conf
+@@ -1,4 +1,4 @@
+-# This is a configuration file for Niklas Agent (Unix)
++# This is a configuration file for Boxul Agent (Unix)
+ # To get more information about Zabbix, visit https://www.zabbix.com
+ 
+ ############ GENERAL PARAMETERS #################
+@@ -8,7 +8,7 @@
+ #
+ # Mandatory: no
+ # Default:
+-# PidFile=/tmp/niklas_agent.pid
++# PidFile=/tmp/boxul_agent.pid
+ 
+ ### Option: LogType
+ #	Specifies where log messages are written to:
+@@ -25,7 +25,7 @@
+ #
+ # Mandatory: yes, if LogType is set to file, otherwise no
+ # Default:
+-# LogFile=/tmp/niklas_agent.log
++# LogFile=/tmp/boxul_agent.log
+ 
+ ### Option: LogFileSize
+ #	Maximum size of log file in MB.
+@@ -67,7 +67,7 @@
+ #	'0.0.0.0/0' can be used to allow any IPv4 address.
+ #	Example: Server=127.0.0.1,192.168.1.0/24,::1,2001:db8::/32,zabbix.example.com
+ #
+-#   If left empty or not set will disable passive checks, and Niklas Agent will not listen on the ListenPort.
++#   If left empty or not set will disable passive checks, and Boxul Agent will not listen on the ListenPort.
+ #
+ # Mandatory: no
+ # Default:
+@@ -226,7 +226,7 @@ Hostname=Zabbix server
+ # EnablePersistentBuffer=0
+ 
+ ### Option: PersistentBufferPeriod
+-#	Niklas Agent will keep data for this time period in case of no
++#	Boxul Agent will keep data for this time period in case of no
+ #	connectivity with Zabbix server or proxy. Older data will be lost. Log data will be preserved.
+ #	Option is valid if EnablePersistentBuffer=1
+ #
+@@ -236,7 +236,7 @@ Hostname=Zabbix server
+ # PersistentBufferPeriod=1h
+ 
+ ### Option: PersistentBufferFile
+-#	Full filename. Niklas Agent will keep SQLite database in this file.
++#	Full filename. Boxul Agent will keep SQLite database in this file.
+ #	Option is valid if EnablePersistentBuffer=1
+ #
+ # Mandatory: no
+@@ -549,6 +549,6 @@ Include=./zabbix_agent2.d/plugins.d/*.conf
+ # Default:
+ # Include=
+ 
+-# Include=/usr/local/etc/niklas_agent.userparams.conf
+-# Include=/usr/local/etc/niklas_agent.conf.d/
+-# Include=/usr/local/etc/niklas_agent.conf.d/*.conf
++# Include=/usr/local/etc/boxul_agent.userparams.conf
++# Include=/usr/local/etc/boxul_agent.conf.d/
++# Include=/usr/local/etc/boxul_agent.conf.d/*.conf
+diff --git a/src/go/conf/zabbix_agent2.win.conf b/src/go/conf/zabbix_agent2.win.conf
+index c9e4a19a376..3484e01d299 100644
+--- a/src/go/conf/zabbix_agent2.win.conf
++++ b/src/go/conf/zabbix_agent2.win.conf
+@@ -1,4 +1,4 @@
+-# This is a configuration file for Niklas Agent (Windows)
++# This is a configuration file for Boxul Agent (Windows)
+ # To get more information about Zabbix, visit https://www.zabbix.com
+ 
+ ############ GENERAL PARAMETERS #################
+@@ -17,7 +17,7 @@
+ #
+ # Mandatory: yes, if LogType is set to file, otherwise no
+ # Default:
+-# LogFile=c:\niklas_agent.log
++# LogFile=c:\boxul_agent.log
+ 
+ ### Option: LogFileSize
+ #	Maximum size of log file in MB.
+@@ -59,7 +59,7 @@
+ #	'0.0.0.0/0' can be used to allow any IPv4 address.
+ #	Example: Server=127.0.0.1,192.168.1.0/24,::1,2001:db8::/32,zabbix.example.com
+ #
+-#   If left empty or not set will disable passive checks, and Niklas Agent will not listen on the ListenPort.
++#   If left empty or not set will disable passive checks, and Boxul Agent will not listen on the ListenPort.
+ #
+ # Mandatory: no
+ # Default:
+@@ -218,7 +218,7 @@ Hostname=Windows host
+ # EnablePersistentBuffer=0
+ 
+ ### Option: PersistentBufferPeriod
+-#	Niklas Agent will keep data for this time period in case of no
++#	Boxul Agent will keep data for this time period in case of no
+ #	connectivity with Zabbix server or proxy. Older data will be lost. Log data will be preserved.
+ #	Option is valid if EnablePersistentBuffer=1
+ #
+@@ -228,7 +228,7 @@ Hostname=Windows host
+ # PersistentBufferPeriod=1h
+ 
+ ### Option: PersistentBufferFile
+-#	Full filename. Niklas Agent will keep SQLite database in this file.
++#	Full filename. Boxul Agent will keep SQLite database in this file.
+ #	Option is valid if EnablePersistentBuffer=1
+ #
+ # Mandatory: no
+@@ -522,6 +522,6 @@ Include=.\zabbix_agent2.d\plugins.d\*.conf
+ # Default:
+ # Include=
+ 
+-# Include=c:\zabbix\niklas_agent.userparams.conf
+-# Include=c:\zabbix\niklas_agent.conf.d\
+-# Include=c:\zabbix\niklas_agent.conf.d\*.conf
++# Include=c:\zabbix\boxul_agent.userparams.conf
++# Include=c:\zabbix\boxul_agent.conf.d\
++# Include=c:\zabbix\boxul_agent.conf.d\*.conf
+-- 
+2.39.5 (Apple Git-154)
+
