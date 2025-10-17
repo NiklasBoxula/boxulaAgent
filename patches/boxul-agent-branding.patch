@@ -350,7 +350,7 @@ index e4627eefac6..c9e4a19a376 100644
 From 086ca618bfb86efb37ddbb11abd5c06c013e1d2d Mon Sep 17 00:00:00 2001
 From: NiklasBoxula <niklaschalupa@icloud.com>
 Date: Thu, 16 Oct 2025 16:37:48 +0200
-Subject: [PATCH 2/2] Branding: Niklas Agent -> Boxul Agent
+Subject: [PATCH 2/2] Branding: Niklas Agent -> Boxula Agent
  (Service/Usage/Banner, sichere Defaults)
 
 ---
@@ -370,7 +370,7 @@ index 8c2a719d63c..42c3bf8c1a8 100644
  )
  
 -const usageMessageExampleConfPath = `/etc/zabbix/niklas_agent.conf`
-+const usageMessageExampleConfPath = `/etc/zabbix/boxul_agent.conf`
++const usageMessageExampleConfPath = `/etc/zabbix/boxula_agent.conf`
  
  func osDependentFlags() zbxflag.Flags { return zbxflag.Flags{} }
  
@@ -383,7 +383,7 @@ index e2260cf0ca5..9940b2cda10 100644
  )
  
 -const usageMessageExampleConfPath = `C:\zabbix\niklas_agent.conf`
-+const usageMessageExampleConfPath = `C:\zabbix\boxul_agent.conf`
++const usageMessageExampleConfPath = `C:\zabbix\boxula_agent.conf`
  
  const (
  	startTypeAutomatic = "automatic"
@@ -392,7 +392,7 @@ index e2260cf0ca5..9940b2cda10 100644
  
  var (
 -	serviceName = "NiklasAgent"
-+	serviceName = "BoxulAgent"
++	serviceName = "BoxulaAgent"
  
  	svcInstallFlag       bool
  	svcUninstallFlag     bool
@@ -401,7 +401,7 @@ index e2260cf0ca5..9940b2cda10 100644
  				Name:        "install",
  				Shorthand:   "i",
 -				Description: "Install Niklas Agent as service",
-+				Description: "Install Boxul Agent as service",
++				Description: "Install Boxula Agent as service",
  			},
  			Default: false,
  			Dest:    &svcInstallFlag,
@@ -410,7 +410,7 @@ index e2260cf0ca5..9940b2cda10 100644
  				Name:        "uninstall",
  				Shorthand:   "d",
 -				Description: "Uninstall Niklas Agent from service",
-+				Description: "Uninstall Boxul Agent from service",
++				Description: "Uninstall Boxula Agent from service",
  			},
  			Default: false,
  			Dest:    &svcUninstallFlag,
@@ -419,7 +419,7 @@ index e2260cf0ca5..9940b2cda10 100644
  				Name:        "start",
  				Shorthand:   "s",
 -				Description: "Start Niklas Agent service",
-+				Description: "Start Boxul Agent service",
++				Description: "Start Boxula Agent service",
  			},
  			Default: false,
  			Dest:    &svcStartFlag,
@@ -428,7 +428,7 @@ index e2260cf0ca5..9940b2cda10 100644
  				Name:        "stop",
  				Shorthand:   "x",
 -				Description: "Stop Niklas Agent service",
-+				Description: "Stop Boxul Agent service",
++				Description: "Stop Boxula Agent service",
  			},
  			Default: false,
  			Dest:    &svcStopFlag,
@@ -437,7 +437,7 @@ index e2260cf0ca5..9940b2cda10 100644
  				Shorthand: "S",
  				Description: fmt.Sprintf(
 -					"Set startup type of the Niklas Agent Windows service to be installed."+
-+					"Set startup type of the Boxul Agent Windows service to be installed."+
++					"Set startup type of the Boxula Agent Windows service to be installed."+
  						" Allowed values: %s (default), %s, %s, %s",
  					startTypeAutomatic,
  					startTypeDelayed,
@@ -446,7 +446,7 @@ index e2260cf0ca5..9940b2cda10 100644
  	exepath, err := getAgentPath()
  	if err != nil {
 -		return fmt.Errorf("failed to get Niklas Agent executable path: %s", err.Error())
-+		return fmt.Errorf("failed to get Boxul Agent executable path: %s", err.Error())
++		return fmt.Errorf("failed to get Boxula Agent executable path: %s", err.Error())
  	}
  
  	m, err := mgr.Connect()
@@ -455,7 +455,7 @@ index e2260cf0ca5..9940b2cda10 100644
  		mgr.Config{
  			StartType:        startType,
 -			DisplayName:      "Niklas Agent",
-+			DisplayName:      "Boxul Agent",
++			DisplayName:      "Boxula Agent",
  			Description:      "Provides system monitoring",
  			BinaryPathName:   fmt.Sprintf("%s -c %s -f=false", exepath, conf),
  			DelayedAutoStart: delayedAutoStart,
@@ -464,7 +464,7 @@ index e2260cf0ca5..9940b2cda10 100644
  func runService() {
  	if err := svc.Run(serviceName, &winService{}); err != nil {
 -		panic(errs.Wrap(err, "use foreground option to run Niklas Agent as console application"))
-+		panic(errs.Wrap(err, "use foreground option to run Boxul Agent as console application"))
++		panic(errs.Wrap(err, "use foreground option to run Boxula Agent as console application"))
  	}
  }
  
@@ -473,7 +473,7 @@ index e2260cf0ca5..9940b2cda10 100644
  	case <-fatalStopChan:
  		changes <- svc.Status{State: svc.Stopped}
 -		// This is needed to make sure that windows will receive the status stopped before Niklas Agent process ends
-+		// This is needed to make sure that windows will receive the status stopped before Boxul Agent process ends
++		// This is needed to make sure that windows will receive the status stopped before Boxula Agent process ends
  		<-time.After(time.Millisecond * 500)
  		fatalStopWg.Done()
  		return
@@ -482,7 +482,7 @@ index e2260cf0ca5..9940b2cda10 100644
  				winServiceWg.Wait()
  				changes <- svc.Status{State: svc.Stopped}
 -				// This is needed to make sure that windows will receive the status stopped before Niklas Agent process ends
-+				// This is needed to make sure that windows will receive the status stopped before Boxul Agent process ends
++				// This is needed to make sure that windows will receive the status stopped before Boxula Agent process ends
  				<-time.After(time.Millisecond * 500)
  				closeChan <- true
  				break loop
@@ -491,7 +491,7 @@ index e2260cf0ca5..9940b2cda10 100644
  			winServiceWg.Wait()
  			changes <- svc.Status{State: svc.Stopped}
 -			// This is needed to make sure that windows will receive the status stopped before Niklas Agent process ends
-+			// This is needed to make sure that windows will receive the status stopped before Boxul Agent process ends
++			// This is needed to make sure that windows will receive the status stopped before Boxula Agent process ends
  			<-time.After(time.Millisecond * 500)
  			closeChan <- true
  			break loop
@@ -504,7 +504,7 @@ index 7f90be59f7e..cf9f5a8d496 100644
  
  const usageMessageFormat = //
 -`Usage of Niklas Agent:
-+`Usage of Boxul Agent:
++`Usage of Boxula Agent:
    %[1]s [-c config-file]
    %[1]s [-c config-file] [-v] -p
    %[1]s [-c config-file] [-v] -t item-key
@@ -513,7 +513,7 @@ index 7f90be59f7e..cf9f5a8d496 100644
  
  const helpMessageFormat = //
 -`A Niklas Agent daemon for monitoring of various server parameters.
-+`A Boxul Agent daemon for monitoring of various server parameters.
++`A Boxula Agent daemon for monitoring of various server parameters.
  
  Options:
  %[1]s
@@ -522,7 +522,7 @@ index 7f90be59f7e..cf9f5a8d496 100644
  			fmt.Fprintf(
  				os.Stderr,
 -				"niklas_agent [%d]: ERROR: %s\n",
-+				"boxul_agent [%d]: ERROR: %s\n",
++				"boxula_agent [%d]: ERROR: %s\n",
  				os.Getpid(),
  				err.Error(),
  			)
@@ -531,7 +531,7 @@ index 7f90be59f7e..cf9f5a8d496 100644
  		fmt.Fprintf(
  			os.Stderr,
 -			"niklas_agent [%d]: ERROR: %s\n",
-+			"boxul_agent [%d]: ERROR: %s\n",
++			"boxula_agent [%d]: ERROR: %s\n",
  			os.Getpid(),
  			cliErr.Message,
  		)
@@ -540,7 +540,7 @@ index 7f90be59f7e..cf9f5a8d496 100644
  	zbxlib.SetLogLevel(agent.Options.DebugLevel)
  
 -	greeting := fmt.Sprintf("Starting Niklas Agent (%s)", version.Long())
-+	greeting := fmt.Sprintf("Starting Boxul Agent (%s)", version.Long())
++	greeting := fmt.Sprintf("Starting Boxula Agent (%s)", version.Long())
  	log.Infof(greeting)
  
  	addresses, err := agent.ParseServerActive(agent.Options.ServerActive)
@@ -549,7 +549,7 @@ index 7f90be59f7e..cf9f5a8d496 100644
  	agent.FirstHostname = hostnames[0]
  	hostmessage := fmt.Sprintf(
 -		"Niklas Agent hostname: [%s]",
-+		"Boxul Agent hostname: [%s]",
++		"Boxula Agent hostname: [%s]",
  		agent.Options.Hostname,
  	)
  	log.Infof(hostmessage)
@@ -558,7 +558,7 @@ index 7f90be59f7e..cf9f5a8d496 100644
  
  	monitor.Wait(monitor.Output)
 -	farewell := fmt.Sprintf("Niklas Agent stopped. (%s)", version.Long())
-+	farewell := fmt.Sprintf("Boxul Agent stopped. (%s)", version.Long())
++	farewell := fmt.Sprintf("Boxula Agent stopped. (%s)", version.Long())
  	log.Infof(farewell)
  
  	if isForeground && agent.Options.LogType != "console" {
@@ -567,7 +567,7 @@ index 7f90be59f7e..cf9f5a8d496 100644
  				Name:        "foreground",
  				Shorthand:   "f",
 -				Description: "Run Niklas Agent in foreground",
-+				Description: "Run Boxul Agent in foreground",
++				Description: "Run Boxula Agent in foreground",
  			},
  			Default: true,
  			Dest:    &args.foreground,
@@ -577,7 +577,7 @@ index 15521c2ea53..b53d37274a6 100644
 +++ b/src/go/conf/zabbix_agent2.conf
 @@ -1,4 +1,4 @@
 -# This is a configuration file for Niklas Agent (Unix)
-+# This is a configuration file for Boxul Agent (Unix)
++# This is a configuration file for Boxula Agent (Unix)
  # To get more information about Zabbix, visit https://www.zabbix.com
  
  ############ GENERAL PARAMETERS #################
@@ -586,7 +586,7 @@ index 15521c2ea53..b53d37274a6 100644
  # Mandatory: no
  # Default:
 -# PidFile=/tmp/niklas_agent.pid
-+# PidFile=/tmp/boxul_agent.pid
++# PidFile=/tmp/boxula_agent.pid
  
  ### Option: LogType
  #	Specifies where log messages are written to:
@@ -595,7 +595,7 @@ index 15521c2ea53..b53d37274a6 100644
  # Mandatory: yes, if LogType is set to file, otherwise no
  # Default:
 -# LogFile=/tmp/niklas_agent.log
-+# LogFile=/tmp/boxul_agent.log
++# LogFile=/tmp/boxula_agent.log
  
  ### Option: LogFileSize
  #	Maximum size of log file in MB.
@@ -604,7 +604,7 @@ index 15521c2ea53..b53d37274a6 100644
  #	Example: Server=127.0.0.1,192.168.1.0/24,::1,2001:db8::/32,zabbix.example.com
  #
 -#   If left empty or not set will disable passive checks, and Niklas Agent will not listen on the ListenPort.
-+#   If left empty or not set will disable passive checks, and Boxul Agent will not listen on the ListenPort.
++#   If left empty or not set will disable passive checks, and Boxula Agent will not listen on the ListenPort.
  #
  # Mandatory: no
  # Default:
@@ -613,7 +613,7 @@ index 15521c2ea53..b53d37274a6 100644
  
  ### Option: PersistentBufferPeriod
 -#	Niklas Agent will keep data for this time period in case of no
-+#	Boxul Agent will keep data for this time period in case of no
++#	Boxula Agent will keep data for this time period in case of no
  #	connectivity with Zabbix server or proxy. Older data will be lost. Log data will be preserved.
  #	Option is valid if EnablePersistentBuffer=1
  #
@@ -622,7 +622,7 @@ index 15521c2ea53..b53d37274a6 100644
  
  ### Option: PersistentBufferFile
 -#	Full filename. Niklas Agent will keep SQLite database in this file.
-+#	Full filename. Boxul Agent will keep SQLite database in this file.
++#	Full filename. Boxula Agent will keep SQLite database in this file.
  #	Option is valid if EnablePersistentBuffer=1
  #
  # Mandatory: no
@@ -633,16 +633,16 @@ index 15521c2ea53..b53d37274a6 100644
 -# Include=/usr/local/etc/niklas_agent.userparams.conf
 -# Include=/usr/local/etc/niklas_agent.conf.d/
 -# Include=/usr/local/etc/niklas_agent.conf.d/*.conf
-+# Include=/usr/local/etc/boxul_agent.userparams.conf
-+# Include=/usr/local/etc/boxul_agent.conf.d/
-+# Include=/usr/local/etc/boxul_agent.conf.d/*.conf
++# Include=/usr/local/etc/boxula_agent.userparams.conf
++# Include=/usr/local/etc/boxula_agent.conf.d/
++# Include=/usr/local/etc/boxula_agent.conf.d/*.conf
 diff --git a/src/go/conf/zabbix_agent2.win.conf b/src/go/conf/zabbix_agent2.win.conf
 index c9e4a19a376..3484e01d299 100644
 --- a/src/go/conf/zabbix_agent2.win.conf
 +++ b/src/go/conf/zabbix_agent2.win.conf
 @@ -1,4 +1,4 @@
 -# This is a configuration file for Niklas Agent (Windows)
-+# This is a configuration file for Boxul Agent (Windows)
++# This is a configuration file for Boxula Agent (Windows)
  # To get more information about Zabbix, visit https://www.zabbix.com
  
  ############ GENERAL PARAMETERS #################
@@ -651,7 +651,7 @@ index c9e4a19a376..3484e01d299 100644
  # Mandatory: yes, if LogType is set to file, otherwise no
  # Default:
 -# LogFile=c:\niklas_agent.log
-+# LogFile=c:\boxul_agent.log
++# LogFile=c:\boxula_agent.log
  
  ### Option: LogFileSize
  #	Maximum size of log file in MB.
@@ -660,7 +660,7 @@ index c9e4a19a376..3484e01d299 100644
  #	Example: Server=127.0.0.1,192.168.1.0/24,::1,2001:db8::/32,zabbix.example.com
  #
 -#   If left empty or not set will disable passive checks, and Niklas Agent will not listen on the ListenPort.
-+#   If left empty or not set will disable passive checks, and Boxul Agent will not listen on the ListenPort.
++#   If left empty or not set will disable passive checks, and Boxula Agent will not listen on the ListenPort.
  #
  # Mandatory: no
  # Default:
@@ -669,7 +669,7 @@ index c9e4a19a376..3484e01d299 100644
  
  ### Option: PersistentBufferPeriod
 -#	Niklas Agent will keep data for this time period in case of no
-+#	Boxul Agent will keep data for this time period in case of no
++#	Boxula Agent will keep data for this time period in case of no
  #	connectivity with Zabbix server or proxy. Older data will be lost. Log data will be preserved.
  #	Option is valid if EnablePersistentBuffer=1
  #
@@ -678,7 +678,7 @@ index c9e4a19a376..3484e01d299 100644
  
  ### Option: PersistentBufferFile
 -#	Full filename. Niklas Agent will keep SQLite database in this file.
-+#	Full filename. Boxul Agent will keep SQLite database in this file.
++#	Full filename. Boxula Agent will keep SQLite database in this file.
  #	Option is valid if EnablePersistentBuffer=1
  #
  # Mandatory: no
@@ -689,9 +689,9 @@ index c9e4a19a376..3484e01d299 100644
 -# Include=c:\zabbix\niklas_agent.userparams.conf
 -# Include=c:\zabbix\niklas_agent.conf.d\
 -# Include=c:\zabbix\niklas_agent.conf.d\*.conf
-+# Include=c:\zabbix\boxul_agent.userparams.conf
-+# Include=c:\zabbix\boxul_agent.conf.d\
-+# Include=c:\zabbix\boxul_agent.conf.d\*.conf
++# Include=c:\zabbix\boxula_agent.userparams.conf
++# Include=c:\zabbix\boxula_agent.conf.d\
++# Include=c:\zabbix\boxula_agent.conf.d\*.conf
 -- 
 2.39.5 (Apple Git-154)
 

@@ -1,5 +1,5 @@
 # .github/workflows/build-windows.yml
-name: Build Boxul Agent (Windows)
+name: Build Boxula Agent (Windows)
 
 on:
   push:
