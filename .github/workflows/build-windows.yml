@@ -1,0 +1,56 @@
+name: Build Boxul Agent (Windows)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "src/**"
+      - ".github/workflows/build-windows.yml"
+      - "configure.ac"
+      - "bootstrap.sh"
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # MSYS2 + Mingw64 Toolchain + deps (Go, OpenSSL, PCRE2, Autotools, Make, pkg-config)
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          msystem: MINGW64
+          install: >-
+            base-devel
+            git
+            make
+            autoconf
+            automake
+            libtool
+            pkg-config
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-go
+            mingw-w64-x86_64-openssl
+            mingw-w64-x86_64-pcre2
+
+      - name: Build (bootstrap, configure, make)
+        shell: msys2 {0}
+        run: |
+          ./bootstrap.sh
+          ./configure --enable-agent2 --disable-server --disable-proxy
+          make -j"$(nproc)"
+
+      - name: Prüfen & umbenennen
+        shell: bash
+        run: |
+          test -f src/go/bin/zabbix_agent2.exe
+          cp src/go/bin/zabbix_agent2.exe src/go/bin/boxul_agent.exe
+
+      - name: Upload artifact (EXE)
+        uses: actions/upload-artifact@v4
+        with:
+          name: boxul-agent-win64
+          path: src/go/bin/boxul_agent.exe
