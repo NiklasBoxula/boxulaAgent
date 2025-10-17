@@ -41,8 +41,9 @@ jobs:
           set -e
           echo "Autoconf: $(autoconf-2.71 --version | head -1)"
 
-          # 1) Windows-spezifischer Patch: DNS/libresolv-Error -> Warnung
+          # 1) Windows-spezifische Patches: harte Abbrüche -> Warnungen
           sed -i 's/AC_MSG_ERROR(\[Unable to do DNS lookups (libresolv check failed)\])/AC_MSG_WARN([DNS lookups disabled for Windows build])/g' configure.ac
+          sed -i 's/AC_MSG_ERROR(\[Unable to find integer field name in union sigval of struct siginfo_t\])/AC_MSG_WARN([Skipping siginfo_t check on Windows])/g' configure.ac
 
           # 2) Bootstrap mit Autoconf 2.71
           export AUTOCONF=autoconf-2.71
