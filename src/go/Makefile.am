@@ -48,7 +48,7 @@ bin/boxula_agent2: FORCE
 		$(GO) build \
 		-tags="${AGENT_GOTAGS}" \
 		-ldflags="${AGENT_GOLDFLAGS}" \
-		-o bin \
+		-o bin/boxula_agent2 \
 		golang.zabbix.com/agent2/cmd/zabbix_agent2
 
 bin/zabbix_web_service: FORCE
