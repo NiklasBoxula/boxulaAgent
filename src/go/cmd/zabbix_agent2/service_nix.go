@@ -22,7 +22,7 @@ import (
 	"golang.zabbix.com/sdk/zbxflag"
 )
 
-const usageMessageExampleConfPath = `/etc/zabbix/boxul_agent.conf`
+const usageMessageExampleConfPath = `/etc/zabbix/boxula_agent.conf`
 
 func osDependentFlags() zbxflag.Flags { return zbxflag.Flags{} }
 

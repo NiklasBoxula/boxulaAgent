@@ -46,11 +46,11 @@ jobs:
       - name: Prüfen & umbenennen
         shell: bash
         run: |
-          test -f src/go/bin/zabbix_agent2.exe
-          cp src/go/bin/zabbix_agent2.exe src/go/bin/boxul_agent.exe
+          test -f src/go/bin/boxula_agent2.exe
+          cp src/go/bin/boxula_agent2.exe src/go/bin/boxula_agent.exe
 
       - name: Upload artifact (EXE)
         uses: actions/upload-artifact@v4
         with:
-          name: boxul-agent-win64
-          path: src/go/bin/boxul_agent.exe
+          name: boxula-agent-win64
+          path: src/go/bin/boxula_agent.exe

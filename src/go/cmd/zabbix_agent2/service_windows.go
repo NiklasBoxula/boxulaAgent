@@ -34,7 +34,7 @@ import (
 	"golang.zabbix.com/sdk/zbxflag"
 )
 
-const usageMessageExampleConfPath = `C:\zabbix\boxul_agent.conf`
+const usageMessageExampleConfPath = `C:\zabbix\boxula_agent.conf`
 
 const (
 	startTypeAutomatic = "automatic"
@@ -44,7 +44,7 @@ const (
 )
 
 var (
-	serviceName = "BoxulAgent"
+	serviceName = "BoxulaAgent"
 
 	svcInstallFlag       bool
 	svcUninstallFlag     bool
@@ -82,7 +82,7 @@ func osDependentFlags() zbxflag.Flags {
 			Flag: zbxflag.Flag{
 				Name:        "install",
 				Shorthand:   "i",
-				Description: "Install Boxul Agent as service",
+				Description: "Install Boxula Agent as service",
 			},
 			Default: false,
 			Dest:    &svcInstallFlag,
@@ -91,7 +91,7 @@ func osDependentFlags() zbxflag.Flags {
 			Flag: zbxflag.Flag{
 				Name:        "uninstall",
 				Shorthand:   "d",
-				Description: "Uninstall Boxul Agent from service",
+				Description: "Uninstall Boxula Agent from service",
 			},
 			Default: false,
 			Dest:    &svcUninstallFlag,
@@ -100,7 +100,7 @@ func osDependentFlags() zbxflag.Flags {
 			Flag: zbxflag.Flag{
 				Name:        "start",
 				Shorthand:   "s",
-				Description: "Start Boxul Agent service",
+				Description: "Start Boxula Agent service",
 			},
 			Default: false,
 			Dest:    &svcStartFlag,
@@ -109,7 +109,7 @@ func osDependentFlags() zbxflag.Flags {
 			Flag: zbxflag.Flag{
 				Name:        "stop",
 				Shorthand:   "x",
-				Description: "Stop Boxul Agent service",
+				Description: "Stop Boxula Agent service",
 			},
 			Default: false,
 			Dest:    &svcStopFlag,
@@ -119,7 +119,7 @@ func osDependentFlags() zbxflag.Flags {
 				Name:      "startup-type",
 				Shorthand: "S",
 				Description: fmt.Sprintf(
-					"Set startup type of the Boxul Agent Windows service to be installed."+
+					"Set startup type of the Boxula Agent Windows service to be installed."+
 						" Allowed values: %s (default), %s, %s, %s",
 					startTypeAutomatic,
 					startTypeDelayed,
@@ -414,7 +414,7 @@ func svcStartTypeFlagParse() (uint32, bool, error) {
 func svcInstall(conf string) error {
 	exepath, err := getAgentPath()
 	if err != nil {
-		return fmt.Errorf("failed to get Boxul Agent executable path: %s", err.Error())
+		return fmt.Errorf("failed to get Boxula Agent executable path: %s", err.Error())
 	}
 
 	m, err := mgr.Connect()
@@ -442,7 +442,7 @@ func svcInstall(conf string) error {
 		exepath,
 		mgr.Config{
 			StartType:        startType,
-			DisplayName:      "Boxul Agent",
+			DisplayName:      "Boxula Agent",
 			Description:      "Provides system monitoring",
 			BinaryPathName:   fmt.Sprintf("%s -c %s -f=false", exepath, conf),
 			DelayedAutoStart: delayedAutoStart,
@@ -616,7 +616,7 @@ func sendServiceStop() {
 
 func runService() {
 	if err := svc.Run(serviceName, &winService{}); err != nil {
-		panic(errs.Wrap(err, "use foreground option to run Boxul Agent as console application"))
+		panic(errs.Wrap(err, "use foreground option to run Boxula Agent as console application"))
 	}
 }
 
@@ -631,7 +631,7 @@ func (ws *winService) Execute(
 		changes <- svc.Status{State: svc.Running, Accepts: svc.AcceptStop | svc.AcceptShutdown}
 	case <-fatalStopChan:
 		changes <- svc.Status{State: svc.Stopped}
-		// This is needed to make sure that windows will receive the status stopped before Boxul Agent process ends
+		// This is needed to make sure that windows will receive the status stopped before Boxula Agent process ends
 		<-time.After(time.Millisecond * 500)
 		fatalStopWg.Done()
 		return
@@ -652,7 +652,7 @@ loop:
 				closeChan <- true
 				winServiceWg.Wait()
 				changes <- svc.Status{State: svc.Stopped}
-				// This is needed to make sure that windows will receive the status stopped before Boxul Agent process ends
+				// This is needed to make sure that windows will receive the status stopped before Boxula Agent process ends
 				<-time.After(time.Millisecond * 500)
 				closeChan <- true
 				break loop
@@ -664,7 +664,7 @@ loop:
 			changes <- svc.Status{State: svc.StopPending}
 			winServiceWg.Wait()
 			changes <- svc.Status{State: svc.Stopped}
-			// This is needed to make sure that windows will receive the status stopped before Boxul Agent process ends
+			// This is needed to make sure that windows will receive the status stopped before Boxula Agent process ends
 			<-time.After(time.Millisecond * 500)
 			closeChan <- true
 			break loop
