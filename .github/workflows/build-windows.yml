@@ -16,7 +16,7 @@ jobs:
           fetch-depth: 0
 
       # MSYS2 + Toolchain + Autotools 2.71 (wichtig für bootstrap.sh)
-      - name: MSYS2 mit Deps installieren (Autoconf 2.71)
+      - name: MSYS2 mit Deps installieren (Autoconf)
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
@@ -24,7 +24,7 @@ jobs:
           install: >-
             git
             base-devel
-            autoconf2.71
+            autoconf
             automake
             libtool
             m4
@@ -35,16 +35,11 @@ jobs:
             mingw-w64-x86_64-pcre2
             mingw-w64-x86_64-libiconv
 
-      - name: Build (mit Autoconf 2.71)
+      - name: Build
         shell: msys2 {0}
         run: |
           set -e
-          echo "Autoconf: $(autoconf-2.71 --version | head -1)"
-          # Sagen bootstrap.sh explizit welche Binaries es nutzen soll
-          export AUTOCONF=autoconf-2.71
-          export AUTOHEADER=autoheader-2.71
-          export AUTOM4TE=autom4te-2.71
-          export ACLOCAL=aclocal
+          echo "Autoconf: $(autoconf --version | head -1)"
           ./bootstrap.sh
           ./configure --enable-agent2 --disable-server --disable-proxy
           make -j"$(nproc)"
