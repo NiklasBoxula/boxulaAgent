@@ -1,4 +1,3 @@
-# .github/workflows/build-windows.yml
 name: Build Boxula Agent (Windows)
 
 on:
@@ -13,7 +12,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      # MSYS2 + Toolchain + Autotools 2.71 (wichtig für bootstrap.sh)
       - name: MSYS2 mit Deps installieren (Autoconf 2.71)
         uses: msys2/setup-msys2@v2
         with:
@@ -25,7 +27,9 @@ jobs:
             autoconf2.71
             automake
             libtool
+            m4
             make
+            pkg-config
             mingw-w64-x86_64-toolchain
             mingw-w64-x86_64-go
             mingw-w64-x86_64-pcre2
@@ -34,7 +38,9 @@ jobs:
       - name: Build (mit Autoconf 2.71)
         shell: msys2 {0}
         run: |
+          set -e
           echo "Autoconf: $(autoconf-2.71 --version | head -1)"
+          # Sagen bootstrap.sh explizit welche Binaries es nutzen soll
           export AUTOCONF=autoconf-2.71
           export AUTOHEADER=autoheader-2.71
           export AUTOM4TE=autom4te-2.71
@@ -42,13 +48,12 @@ jobs:
           ./bootstrap.sh
           ./configure --enable-agent2 --disable-server --disable-proxy
           make -j"$(nproc)"
-          # das Go-Binary landet in src/go/bin/zabbix_agent2 (per Makefile)
           ls -lah src/go/bin || true
 
       - name: Artefakt hochladen (Agent EXE)
         uses: actions/upload-artifact@v4
         with:
-          name: boxul-agent-windows
+          name: boxula-agent-windows
           path: |
             src/go/bin/zabbix_agent2.exe
           if-no-files-found: error
