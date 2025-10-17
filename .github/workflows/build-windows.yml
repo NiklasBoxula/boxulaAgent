@@ -1,13 +1,10 @@
+# .github/workflows/build-windows.yml
 name: Build Boxul Agent (Windows)
 
 on:
-  workflow_dispatch:
   push:
-    paths:
-      - "src/**"
-      - ".github/workflows/build-windows.yml"
-      - "configure.ac"
-      - "bootstrap.sh"
+    branches: [ master ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -17,40 +14,41 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # MSYS2 + Mingw64 Toolchain + deps (Go, OpenSSL, PCRE2, Autotools, Make, pkg-config)
-      - name: Setup MSYS2
+      - name: MSYS2 mit Deps installieren (Autoconf 2.71)
         uses: msys2/setup-msys2@v2
         with:
-          update: true
           msystem: MINGW64
+          update: true
           install: >-
-            base-devel
             git
-            make
-            autoconf
+            base-devel
+            autoconf2.71
             automake
             libtool
-            pkg-config
+            make
             mingw-w64-x86_64-toolchain
             mingw-w64-x86_64-go
-            mingw-w64-x86_64-openssl
             mingw-w64-x86_64-pcre2
+            mingw-w64-x86_64-libiconv
 
-      - name: Build (bootstrap, configure, make)
+      - name: Build (mit Autoconf 2.71)
         shell: msys2 {0}
         run: |
+          echo "Autoconf: $(autoconf-2.71 --version | head -1)"
+          export AUTOCONF=autoconf-2.71
+          export AUTOHEADER=autoheader-2.71
+          export AUTOM4TE=autom4te-2.71
+          export ACLOCAL=aclocal
           ./bootstrap.sh
           ./configure --enable-agent2 --disable-server --disable-proxy
           make -j"$(nproc)"
+          # das Go-Binary landet in src/go/bin/zabbix_agent2 (per Makefile)
+          ls -lah src/go/bin || true
 
-      - name: Prüfen & umbenennen
-        shell: bash
-        run: |
-          test -f src/go/bin/boxula_agent2.exe
-          cp src/go/bin/boxula_agent2.exe src/go/bin/boxula_agent.exe
-
-      - name: Upload artifact (EXE)
+      - name: Artefakt hochladen (Agent EXE)
         uses: actions/upload-artifact@v4
         with:
-          name: boxula-agent-win64
-          path: src/go/bin/boxula_agent.exe
+          name: boxul-agent-windows
+          path: |
+            src/go/bin/zabbix_agent2.exe
+          if-no-files-found: error
