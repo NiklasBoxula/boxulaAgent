@@ -19,9 +19,11 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"os/signal"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"syscall"
 	"time"
@@ -186,6 +188,15 @@ func run() error {
 	err = validateExclusiveFlags(args)
 	if err != nil {
 		return eventLogErr(errs.Wrap(err, "failed to validate exclusive flags"))
+	}
+
+	// If no explicit config path was provided, try to resolve default paths
+	if args.configPath == confDefault {
+		resolvedPath := resolveDefaultConfPath()
+		if resolvedPath != "" {
+			args.configPath = resolvedPath
+			log.Infof("using config at: %s", resolvedPath)
+		}
 	}
 
 	if args.testConfig {
@@ -867,4 +878,45 @@ func getSignalName(sig os.Signal) string {
 	default:
 		return "unknown"
 	}
+}
+
+// resolveDefaultConfPath liefert den ersten vorhandenen Standard-Configpfad.
+// Reihenfolge:
+// Windows:
+//   1) %ProgramData%\BoxulaAgent\boxula-agent.conf
+//   2) %ProgramData%\Zabbix\zabbix_agent2.conf (Fallback)
+// Linux/Unix:
+//   1) /etc/boxula/boxula-agent.conf
+//   2) /etc/zabbix/zabbix_agent2.conf (Fallback)
+// Existiert keiner, leere Zeichenfolge zurückgeben.
+func resolveDefaultConfPath() string {
+	var paths []string
+
+	if runtime.GOOS == "windows" {
+		programData := os.Getenv("ProgramData")
+		if programData != "" {
+			paths = []string{
+				filepath.Join(programData, "BoxulaAgent", "boxula-agent.conf"),
+				filepath.Join(programData, "Zabbix", "zabbix_agent2.conf"),
+			}
+		}
+	} else {
+		paths = []string{
+			"/etc/boxula/boxula-agent.conf",
+			"/etc/zabbix/zabbix_agent2.conf",
+		}
+	}
+
+	for _, path := range paths {
+		_, err := os.Stat(path)
+		if err == nil {
+			return path
+		}
+		if !errors.Is(err, fs.ErrNotExist) {
+			// If there's an error other than "not found", continue checking
+			continue
+		}
+	}
+
+	return ""
 }
