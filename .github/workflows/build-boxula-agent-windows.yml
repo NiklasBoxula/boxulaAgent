@@ -1,0 +1,32 @@
+name: Build boxulaAgent (Windows Agent)
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Build Windows BoxulaAgent
+        run: |
+          cd src/go/cmd/boxula_agent
+          go mod tidy
+          go build -o boxula_agent_windows.exe .
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: boxula_agent_windows
+          path: src/go/cmd/boxula_agent/boxula_agent_windows.exe
