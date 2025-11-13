@@ -1,3 +1,4 @@
+// Based on upstream Zabbix Agent 2 command. Do not modify originals.
 /*
 ** Copyright (C) 2001-2025 Zabbix SIA
 **
@@ -64,7 +65,7 @@ const usageMessageFormatRuntimeControlFormat = //
 `
 
 const usageMessageFormat = //
-`Usage of Zabbix agent 2:
+`Usage of Boxula Agent:
   %[1]s [-c config-file]
   %[1]s [-c config-file] [-v] -p
   %[1]s [-c config-file] [-v] -t item-key
@@ -80,7 +81,7 @@ const helpMessageFormat = //
 Options:
 %[1]s
 
-Example: zabbix_agent2 -c %[2]s
+Example: boxula_agent -c %[2]s (or zabbix_agent2 -c /etc/zabbix/zabbix_agent2.conf)
 
 Report bugs to: <https://support.zabbix.com>
 Zabbix home page: <https://www.zabbix.com>
@@ -130,7 +131,7 @@ func main() {
 		if !errors.As(err, &cliErr) {
 			fmt.Fprintf(
 				os.Stderr,
-				"zabbix_agent2 [%d]: ERROR: %s\n",
+				"boxula_agent [%d]: ERROR: %s\n",
 				os.Getpid(),
 				err.Error(),
 			)
@@ -139,7 +140,7 @@ func main() {
 
 		fmt.Fprintf(
 			os.Stderr,
-			"zabbix_agent2 [%d]: ERROR: %s\n",
+			"boxula_agent [%d]: ERROR: %s\n",
 			os.Getpid(),
 			cliErr.Message,
 		)
@@ -355,7 +356,7 @@ func runAgent(isForeground bool, configPath string, systemOpt agent.PluginSystem
 
 	zbxlib.SetLogLevel(agent.Options.DebugLevel)
 
-	greeting := fmt.Sprintf("Starting Zabbix Agent 2 (%s)", version.Long())
+	greeting := fmt.Sprintf("Starting Boxula Agent (%s)", version.Long())
 	log.Infof(greeting)
 
 	addresses, err := agent.ParseServerActive(agent.Options.ServerActive)
@@ -447,7 +448,7 @@ func runAgent(isForeground bool, configPath string, systemOpt agent.PluginSystem
 
 	agent.FirstHostname = hostnames[0]
 	hostmessage := fmt.Sprintf(
-		"Zabbix Agent2 hostname: [%s]",
+		"Boxula Agent hostname: [%s]",
 		agent.Options.Hostname,
 	)
 	log.Infof(hostmessage)
@@ -531,7 +532,7 @@ func runAgent(isForeground bool, configPath string, systemOpt agent.PluginSystem
 	}
 
 	monitor.Wait(monitor.Output)
-	farewell := fmt.Sprintf("Zabbix Agent 2 stopped. (%s)", version.Long())
+	farewell := fmt.Sprintf("Boxula Agent stopped. (%s)", version.Long())
 	log.Infof(farewell)
 
 	if isForeground && agent.Options.LogType != "console" {
@@ -920,3 +921,4 @@ func resolveDefaultConfPath() string {
 
 	return ""
 }
+
