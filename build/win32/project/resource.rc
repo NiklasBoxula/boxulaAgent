@@ -1,103 +1,42 @@
-//Microsoft Developer Studio generated resource script.
-//
-#include "resource.h"
+#include <windows.h>
 
-#define APSTUDIO_READONLY_SYMBOLS
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 2 resource.
-//
-#include "winresrc.h"
+/* Einfache feste Versionsinfos für den Boxula Agent */
+#define VER_FILEVERSION            1,0,0,0
+#define VER_PRODUCTVERSION         1,0,0,0
 
-/////////////////////////////////////////////////////////////////////////////
-#undef APSTUDIO_READONLY_SYMBOLS
-
-/////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
-#endif //_WIN32
-
-#ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// TEXTINCLUDE
-//
-
-1 TEXTINCLUDE DISCARDABLE
-BEGIN
-    "resource.h\0"
-END
-
-2 TEXTINCLUDE DISCARDABLE
-BEGIN
-    "#include ""winresrc.h""\r\n"
-    "\0"
-END
-
-3 TEXTINCLUDE DISCARDABLE
-BEGIN
-    "\r\n"
-    "\0"
-END
-
-#endif    // APSTUDIO_INVOKED
-
-
-#ifndef ZABBIX_AGENT2
-/////////////////////////////////////////////////////////////////////////////
-//
-// 11
-//
-
-1                       11      DISCARDABLE     "MSG00001.bin"
-#endif    // ZABBIX_AGENT2
-
-#endif    // English (U.S.) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-
-#ifndef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 3 resource.
-//
-
-
-/////////////////////////////////////////////////////////////////////////////
-#endif    // not APSTUDIO_INVOKED
+#define VER_FILEVERSION_STR        "1.0.0.0\0"
+#define VER_PRODUCTVERSION_STR     "1.0.0.0\0"
+#define VER_COMPANYNAME_STR        "Boxula\0"
+#define VER_FILEDESCRIPTION_STR    "Boxula Agent 2\0"
+#define VER_INTERNALNAME_STR       "boxula_agent2.exe\0"
+#define VER_PRODUCTNAME_STR        "Boxula Agent\0"
+#define VER_LEGALCOPYRIGHT_STR     "Copyright (C) 2025 Boxula\0"
 
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION     VER_FILEVERSION
-PRODUCTVERSION	VER_PRODUCTVERSION
+    FILEVERSION     VER_FILEVERSION
+    PRODUCTVERSION  VER_PRODUCTVERSION
+    FILEFLAGSMASK   0x3fL
+    FILEFLAGS       0x0L
+    FILEOS          VOS_NT_WINDOWS32
+    FILETYPE        VFT_APP
+    FILESUBTYPE     0x0L
 BEGIN
-	BLOCK "StringFileInfo"
-	BEGIN
-		BLOCK "040904E4"
-		BEGIN
-			VALUE "CompanyName",		VER_COMPANYNAME_STR
-			VALUE "ProductVersion",		VER_PRODUCTVERSION_STR
-			VALUE "FileVersion",		VER_FILEVERSION_STR
-			VALUE "InternalName",		VER_PRODUCTNAME_STR
-			VALUE "FileDescription",	VER_FILEDESCRIPTION_STR
-			VALUE "LegalCopyright",		VER_LEGALCOPYRIGHT_STR
-			VALUE "ProductName",		VER_PRODUCTNAME_STR
-		END
-	END
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName",      VER_COMPANYNAME_STR
+            VALUE "FileDescription",  VER_FILEDESCRIPTION_STR
+            VALUE "FileVersion",      VER_FILEVERSION_STR
+            VALUE "InternalName",     VER_INTERNALNAME_STR
+            VALUE "ProductName",      VER_PRODUCTNAME_STR
+            VALUE "ProductVersion",   VER_PRODUCTVERSION_STR
+            VALUE "LegalCopyright",   VER_LEGALCOPYRIGHT_STR
+        END
+    END
 
-	BLOCK "VarFileInfo"
-	BEGIN
-		/* The following line should only be modified for localized versions.     */
-		/* It consists of any number of WORD,WORD pairs, with each pair           */
-		/* describing a language,codepage combination supported by the file.      */
-		/*                                                                        */
-		/* For example, a file might have values "0x409,1252" indicating that it  */
-		/* supports English language (0x409) in the Windows ANSI codepage (1252). */
-
-		VALUE "Translation", 0x409, 1252
-	END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 1252
+    END
 END
