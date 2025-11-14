@@ -34,36 +34,14 @@ jobs:
         with:
           path: |
             C:\zabbix_deps
-          key: zabbix-vcpkg-v1-${{ runner.os }}-x64-mingw-static
+          key: zabbix-vcpkg-v2-${{ runner.os }}-x64-mingw-static
 
       - name: Install Zabbix dependencies via vcpkg
+        shell: cmd
         run: |
           cd C:\vcpkg
-          .\vcpkg.exe install ^
-            pcre2:x64-mingw-static ^
-            libiconv:x64-mingw-static ^
-            openssl:x64-mingw-static ^
-            --x-install-root=C:\zabbix_deps
+          vcpkg.exe install pcre2:x64-mingw-static libiconv:x64-mingw-static openssl:x64-mingw-static --x-install-root=C:\zabbix_deps
 
       - name: Build Zabbix Agent2 (boxula fork)
         env:
-          CGO_LDFLAGS: "-lCrypt32"
-          GOFLAGS: "-buildvcs=false"
-        run: |
-          # MinGW + Go in PATH
-          $mingw = "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin"
-          $go    = "C:\Program Files\Go\bin"
-          $env:PATH = "$mingw;$go;$env:PATH"
-
-          # vcpkg-Triplet-Pfad (wichtig: kein "installed" im Pfad!)
-          $env:VCROOT = "C:\zabbix_deps\x64-mingw-static"
-
-          cd $Env:GITHUB_WORKSPACE\build\mingw
-
-          mingw32-make ARCH=AMD64 PCRE2=$env:VCROOT OPENSSL=$env:VCROOT all
-
-      - name: Upload built agent2
-        uses: actions/upload-artifact@v4
-        with:
-          name: boxula-agent2-win64
-          path: bin\win64\zabbix_agent2.exe
+          CGO_LDFLA_
