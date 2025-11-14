@@ -33,28 +33,24 @@ jobs:
           cd C:\vcpkg
           .\vcpkg.exe install pcre2:x64-mingw-static libiconv:x64-mingw-static openssl:x64-mingw-static --x-install-root=C:\zabbix_deps
 
-      - name: Debug vcpkg include layout
-        run: |
-          echo === PCRE2 Files ===
-          dir C:\zabbix_deps\ /s /b | findstr /i pcre2
-
       - name: Build Zabbix Agent2 (boxula fork)
         env:
           CGO_LDFLAGS: "-lCrypt32"
           GOFLAGS: "-buildvcs=false"
         run: |
-          # MinGW + Go in PATH
+          # Pfade für MinGW und Go setzen
           $mingw = "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin"
-          $go    = "C:\ProgramData\chocolatey\lib\golang\tools\bin"
+          $go    = "C:\Program Files\Go\bin"
           $env:PATH = "$mingw;$go;$env:PATH"
 
-          # Triplet-Ordner von vcpkg (wichtig!)
+          # vcpkg Triplet-Pfad
           $env:VCROOT = "C:\zabbix_deps\installed\x64-mingw-static"
 
+          # In den MinGW-Build-Ordner wechseln
           cd $Env:GITHUB_WORKSPACE\build\mingw
 
+          # Build starten
           mingw32-make ARCH=AMD64 PCRE2=$env:VCROOT OPENSSL=$env:VCROOT all
-
 
       - name: Upload built agent2
         uses: actions/upload-artifact@v4
