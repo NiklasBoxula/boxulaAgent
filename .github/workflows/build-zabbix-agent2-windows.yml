@@ -1,0 +1,29 @@
+name: Build Zabbix Agent2 (Windows)
+
+on:
+  workflow_dispatch:   # nur manuell starten, kein Push nötig
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Build Zabbix Agent 2
+        run: |
+          cd src/go/cmd/zabbix_agent2
+          go mod tidy
+          go build -o zabbix_agent2_windows.exe .
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zabbix_agent2_windows
+          path: src/go/cmd/zabbix_agent2/zabbix_agent2_windows.exe
