@@ -1,0 +1,79 @@
+name: Build Windows Boxula Agent
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  build-windows-boxula-agent:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install build tools (MinGW + Go + CMake)
+        run: |
+          choco install -y mingw
+          choco install -y golang
+          choco install -y cmake
+
+      - name: Clone and bootstrap vcpkg
+        run: |
+          cd C:\
+          git clone https://github.com/microsoft/vcpkg.git
+          cd vcpkg
+          .\bootstrap-vcpkg.bat
+
+      # Cacht C:\zabbix_deps, damit vcpkg nicht jedes Mal 20 Minuten baut
+      - name: Cache vcpkg deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            C:\zabbix_deps
+          key: zabbix-vcpkg-v3-${{ runner.os }}-x64-mingw-static
+
+      - name: Install Zabbix dependencies via vcpkg
+        shell: cmd
+        run: |
+          cd C:\vcpkg
+          vcpkg.exe install pcre2:x64-mingw-static libiconv:x64-mingw-static openssl:x64-mingw-static --x-install-root=C:\zabbix_deps
+
+      - name: Build Boxula Agent
+        env:
+          CGO_LDFLAGS: "-lCrypt32"
+          GOFLAGS: "-buildvcs=false"
+        run: |
+          # MinGW + Go in PATH
+          $mingw = "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin"
+          $go    = "C:\Program Files\Go\bin"
+          $env:PATH = "$mingw;$go;$env:PATH"
+
+          # vcpkg-Triplet-Pfad
+          $env:VCROOT = "C:\zabbix_deps\x64-mingw-static"
+          $env:PCRE2 = $env:VCROOT
+          $env:OPENSSL = $env:VCROOT
+
+          # Build-Verzeichnis erstellen
+          New-Item -ItemType Directory -Force -Path "$Env:GITHUB_WORKSPACE\bin\win64" | Out-Null
+
+          # In das Build-Verzeichnis wechseln
+          cd $Env:GITHUB_WORKSPACE\build\mingw
+
+          # Makefile-Variablen für Boxula Agent überschreiben
+          # Das Makefile verwendet diese Variablen, wir überschreiben sie über die Kommandozeile
+          mingw32-make ARCH=AMD64 PCRE2=$env:PCRE2 OPENSSL=$env:OPENSSL `
+            TARGETDIR="$Env:GITHUB_WORKSPACE\src\go\cmd\boxula_agent" `
+            TARGETPKG="golang.zabbix.com/agent2/cmd/boxula_agent" `
+            TARGETBIN="$Env:GITHUB_WORKSPACE\bin\win64\boxula_agent.exe" `
+            all
+
+      - name: Upload built boxula agent
+        uses: actions/upload-artifact@v4
+        with:
+          name: boxula-agent-win64
+          path: bin\win64\boxula_agent.exe
+
